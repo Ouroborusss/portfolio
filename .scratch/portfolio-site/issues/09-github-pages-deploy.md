@@ -1,7 +1,7 @@
 # Set up GitHub Pages deployment via Actions
 
 Type: task
-Status: claimed
+Status: resolved
 Blocked by: 01, 02
 
 ## Question

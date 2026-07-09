@@ -4,7 +4,7 @@ interface Props {
   description?: string;
 }
 const { title = 'Ouroborusss', description = 'Blender renders — landscapes, abstract ideas, and stills.' } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, ''); // strip trailing slash — always use `${base}/path`
 ---
 <!doctype html>
 <html lang="en">
@@ -14,18 +14,18 @@ const base = import.meta.env.BASE_URL;
   <meta name="generator" content={Astro.generator} />
   <meta name="description" content={description} />
   <title>{title === 'Ouroborusss' ? title : `${title} — Ouroborusss`}</title>
-  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
-  <link rel="icon" href={`${base}favicon.ico`} />
+  <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+  <link rel="icon" href={`${base}/favicon.ico`} />
 </head>
 <body>
   <header class="site-nav">
     <div class="wrap">
-      <a href={base} class="nav-logo">Ouroborusss</a>
+      <a href={`${base}/`} class="nav-logo">Ouroborusss</a>
       <nav>
         <ul class="nav-links">
-          <li><a href={base} aria-current={Astro.url.pathname === base || Astro.url.pathname === `${base}/` ? 'page' : undefined}>Work</a></li>
-          <li><a href={`${base}about`} aria-current={Astro.url.pathname.startsWith(`${base}about`) ? 'page' : undefined}>About</a></li>
-          <li><a href={`${base}about#contact`}>Contact</a></li>
+          <li><a href={`${base}/`} aria-current={Astro.url.pathname === `${base}/` ? 'page' : undefined}>Work</a></li>
+          <li><a href={`${base}/about`} aria-current={Astro.url.pathname.startsWith(`${base}/about`) ? 'page' : undefined}>About</a></li>
+          <li><a href={`${base}/about#contact`}>Contact</a></li>
         </ul>
       </nav>
     </div>

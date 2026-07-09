@@ -17,7 +17,7 @@ const renderImages = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true },
 );
 
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 // Resolve each render's ImageMetadata (null = not found, will show fallback)
 const resolvedRenders = series.data.renders.map((r, i) => {
@@ -28,7 +28,7 @@ const resolvedRenders = series.data.renders.map((r, i) => {
 
 <BaseLayout title={series.data.title}>
   <div class="wrap">
-    <a href={base} class="back-link">← All series</a>
+    <a href={`${base}/`} class="back-link">← All series</a>
 
     <header class="series-header">
       <span class="tag-chip">{series.data.tag}</span>

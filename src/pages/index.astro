@@ -13,7 +13,7 @@ const coverImages = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true },
 );
 
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const tags = ['Landscapes', 'Abstract', 'Stills'] as const;
 ---
@@ -38,7 +38,7 @@ const tags = ['Landscapes', 'Abstract', 'Stills'] as const;
         const coverImg = coverImages[coverPath];
         return (
           <a
-            href={`${base}series/${series.id}`}
+            href={`${base}/series/${series.id}`}
             class="series-card"
             data-tag={series.data.tag}
           >

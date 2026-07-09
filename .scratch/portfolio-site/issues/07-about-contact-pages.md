@@ -1,7 +1,7 @@
 # Build the About and contact/social pages
 
 Type: task
-Status: claimed
+Status: resolved
 Blocked by: 03
 
 ## Question
