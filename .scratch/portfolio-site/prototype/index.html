@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PROTOTYPE — Portfolio visual directions (throwaway)</title>
+<!--
+  THROWAWAY PROTOTYPE — answers ticket 03 "Prototype the bold/artistic visual direction".
+  Three radically different directions, switchable via the bottom bar (or ?dir=neon|brutal|dream).
+  Placeholder art is procedural CSS, NOT real renders. Delete or absorb once a direction is chosen.
+-->
+<style>
+  :root {
+    --bg: #0a0a0c; --fg: #f5f5f7; --muted: #9a9aa6; --accent: #6cf; --card: #141419;
+    --edge: rgba(255,255,255,.08); --radius: 14px; --maxw: 1200px;
+    --display: 700 clamp(2.4rem, 7vw, 6rem)/0.95 "Georgia", serif;
+    --mono: 500 .72rem/1 ui-monospace, monospace;
+    --ease: cubic-bezier(.2,.8,.2,1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased; transition: background .5s var(--ease), color .5s var(--ease);
+  }
+  a { color: inherit; }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- NAV ---------- */
+  nav { display:flex; align-items:center; justify-content:space-between; padding: 22px 0; }
+  .logo { font: var(--mono); letter-spacing:.28em; text-transform:uppercase; }
+  .navlinks { display:flex; gap: 26px; font: var(--mono); letter-spacing:.14em; text-transform:uppercase; }
+  .navlinks span { color: var(--muted); cursor: pointer; transition: color .2s; }
+  .navlinks span:hover { color: var(--fg); }
+
+  /* ---------- HERO ---------- */
+  .hero { padding: 8vh 0 6vh; }
+  .hero h1 { font: var(--display); margin: 0 0 18px; letter-spacing:-.01em; }
+  .hero p { color: var(--muted); max-width: 46ch; font-size: 1.05rem; line-height:1.6; margin:0; }
+  .tag-accent { color: var(--accent); }
+
+  /* ---------- FILTER ---------- */
+  .filters { display:flex; gap:10px; margin: 34px 0 26px; flex-wrap:wrap; }
+  .chip {
+    font: var(--mono); letter-spacing:.14em; text-transform:uppercase;
+    padding: 9px 16px; border:1px solid var(--edge); border-radius:0;
+    background: transparent; color: var(--muted); cursor:pointer; transition: all .2s var(--ease);
+  }
+  .chip[aria-pressed="true"] { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+  .chip:hover { color: var(--fg); }
+  .chip[aria-pressed="true"]:hover { color: var(--bg); }
+
+  /* ---------- GRID ---------- */
+  .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding-bottom: 120px; }
+  @media (max-width: 820px){ .grid { grid-template-columns: repeat(2,1fr);} }
+  @media (max-width: 520px){ .grid { grid-template-columns: 1fr;} }
+  .card {
+    position:relative; border-radius: var(--radius); overflow:hidden; cursor:pointer;
+    aspect-ratio: 4/5; background:#222; border:1px solid var(--edge);
+    transition: transform .45s var(--ease), box-shadow .45s var(--ease), filter .45s var(--ease);
+  }
+  .card .art { position:absolute; inset:0; transition: transform .8s var(--ease); }
+  .card:hover .art { transform: scale(1.08); }
+  .card .meta {
+    position:absolute; left:0; right:0; bottom:0; padding:18px;
+    background: linear-gradient(to top, rgba(0,0,0,.78), transparent);
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .card .title { font-size: 1.15rem; font-weight:600; }
+  .card .tags { font: var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+
+  /* series render tiles slightly squarer */
+  .series-view .card { aspect-ratio: 1/1; }
+
+  /* ---------- LIGHTBOX ---------- */
+  .lb { position:fixed; inset:0; background:rgba(0,0,0,.92); display:none; z-index:40;
+        align-items:center; justify-content:center; flex-direction:column; gap:18px; padding:5vh 5vw;
+        opacity:0; transition: opacity .35s var(--ease); }
+  .lb.open { display:flex; opacity:1; }
+  .lb .frame { width:min(1100px,92vw); aspect-ratio:16/10; border-radius:10px; overflow:hidden; border:1px solid var(--edge);
+               transform: scale(.96); transition: transform .4s var(--ease); }
+  .lb.open .frame { transform: scale(1); }
+  .lb .cap { font: var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+  .lb .x { position:absolute; top:22px; right:26px; font-size:1.6rem; cursor:pointer; color:var(--muted); }
+  .lb .x:hover { color:var(--fg); }
+
+  .back { font: var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+          cursor:pointer; margin: 10px 0 24px; display:inline-block; }
+  .back:hover { color: var(--fg); }
+  .hidden { display:none !important; }
+
+  /* ---------- SWITCHER ---------- */
+  .switch { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:60;
+            display:flex; gap:6px; padding:7px; border-radius:999px;
+            background: rgba(20,20,26,.86); backdrop-filter: blur(12px); border:1px solid var(--edge); }
+  .switch button { font: var(--mono); letter-spacing:.12em; text-transform:uppercase; cursor:pointer;
+                   padding:9px 16px; border-radius:999px; border:0; background:transparent; color:#bbb; transition: all .2s; }
+  .switch button.active { background:#fff; color:#000; }
+  .switch .note { align-self:center; padding:0 12px 0 6px; color:#666; font: var(--mono); }
+
+  /* =======================================================================
+     DIRECTION A — "NEON VOID": near-black, neon glow, kinetic
+     ======================================================================= */
+  body[data-dir="neon"] {
+    --bg:#060608; --fg:#f2f2f5; --muted:#7d7d8f; --accent:#7cf9c8; --edge:rgba(124,249,200,.14);
+    --display: 800 clamp(2.6rem,8vw,7rem)/0.92 "Georgia", serif;
+  }
+  body[data-dir="neon"] .hero h1 { text-shadow: 0 0 34px rgba(124,249,200,.25); }
+  body[data-dir="neon"] .card:hover { box-shadow: 0 0 0 1px var(--accent), 0 20px 60px rgba(124,249,200,.18); transform: translateY(-6px); }
+  body[data-dir="neon"] .card .title { text-shadow: 0 1px 20px rgba(0,0,0,.8); }
+
+  /* =======================================================================
+     DIRECTION B — "BRUTALIST EDITORIAL": stark, oversized type, asymmetry
+     ======================================================================= */
+  body[data-dir="brutal"] {
+    --bg:#e9e6dd; --fg:#111; --muted:#555; --accent:#ff3b1d; --card:#dcd8cc; --edge:rgba(0,0,0,.18);
+    --radius: 0px; --display: 900 clamp(3rem,10vw,8.5rem)/0.86 "Arial Black", system-ui, sans-serif;
+  }
+  body[data-dir="brutal"] .hero h1 { text-transform:uppercase; letter-spacing:-.02em; }
+  body[data-dir="brutal"] .logo, body[data-dir="brutal"] .navlinks { font-weight:800; }
+  body[data-dir="brutal"] .grid { gap: 2px; }
+  body[data-dir="brutal"] .card { border:2px solid #111; }
+  body[data-dir="brutal"] .card:nth-child(3n+1){ transform: translateY(14px); }
+  body[data-dir="brutal"] .card:hover { transform: translateY(0) rotate(-.6deg); }
+  body[data-dir="brutal"] .chip { border:2px solid #111; border-radius:0; }
+  body[data-dir="brutal"] .card .meta { background: var(--accent); }
+  body[data-dir="brutal"] .card .title { color:#fff; }
+  body[data-dir="brutal"] .card .tags { color: rgba(255,255,255,.8); }
+
+  /* =======================================================================
+     DIRECTION C — "GRADIENT DREAM": immersive color, soft painterly motion
+     ======================================================================= */
+  body[data-dir="dream"] {
+    --bg:#0d0716; --fg:#f6f0ff; --muted:#a99cc6; --accent:#ff8ad1; --edge:rgba(255,255,255,.1);
+    --radius: 22px; --display: 600 clamp(2.6rem,8vw,7rem)/0.98 "Georgia", serif;
+    background:
+      radial-gradient(1200px 800px at 15% -10%, #3b1d6e 0%, transparent 55%),
+      radial-gradient(1000px 700px at 110% 20%, #8a2b6b 0%, transparent 50%),
+      #0d0716;
+    background-attachment: fixed;
+  }
+  body[data-dir="dream"] .hero h1 { font-style: italic; }
+  body[data-dir="dream"] .card { border:1px solid rgba(255,255,255,.12); }
+  body[data-dir="dream"] .card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 30px 80px rgba(0,0,0,.45); }
+  body[data-dir="dream"] .card .art { animation: drift 14s var(--ease) infinite alternate; }
+  @keyframes drift { from { transform: scale(1.05) translate(-1%, -1%);} to { transform: scale(1.12) translate(2%, 2%);} }
+
+  /* =======================================================================
+     DIRECTION D — "EARTHEN" (chosen blend): brutalist shapes + muted
+     green/brown palette + clean aligned grid + translucency
+     ======================================================================= */
+  body[data-dir="earth"] {
+    --bg:#16150f; --fg:#e9e5d6; --muted:#8f8b73; --accent:#8a9a63; --card:rgba(255,255,255,.03);
+    --edge:rgba(233,229,214,.16); --radius:0px;
+    --display: 900 clamp(3rem,9vw,7.5rem)/0.88 "Arial Black", system-ui, sans-serif;
+    background:
+      radial-gradient(1100px 700px at 12% -10%, #23271a 0%, transparent 55%),
+      radial-gradient(900px 600px at 115% 10%, #2a2317 0%, transparent 55%),
+      #16150f;
+    background-attachment: fixed;
+  }
+  body[data-dir="earth"] .hero h1 { text-transform:uppercase; letter-spacing:-.015em; }
+  body[data-dir="earth"] .logo, body[data-dir="earth"] .navlinks { font-weight:800; }
+  /* clean, aligned grid — no offset, no tilt */
+  body[data-dir="earth"] .grid { gap: 14px; }
+  body[data-dir="earth"] .card { border:1px solid var(--edge); background: var(--card); }
+  /* translucent, blurred caption bar */
+  body[data-dir="earth"] .card .meta {
+    background: linear-gradient(to top, rgba(12,11,7,.72), rgba(12,11,7,.12) 62%, transparent);
+    backdrop-filter: blur(3px);
+  }
+  /* moss film + firm lift on hover (brutalist confidence, no rotation) */
+  body[data-dir="earth"] .card::after {
+    content:""; position:absolute; inset:0; background: rgba(138,154,99,0); transition: background .4s var(--ease); pointer-events:none;
+  }
+  body[data-dir="earth"] .card:hover::after { background: rgba(138,154,99,.16); }
+  body[data-dir="earth"] .card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(0,0,0,.5); }
+  /* translucent chips */
+  body[data-dir="earth"] .chip { background: rgba(233,229,214,.05); }
+  body[data-dir="earth"] .chip[aria-pressed="true"] { color:#16150f; background: var(--accent); border-color: var(--accent); }
+  /* translucent sticky-feel nav bar */
+  body[data-dir="earth"] nav {
+    background: rgba(22,21,15,.55); backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--edge); margin: 0 -24px; padding: 18px 24px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body data-dir="earth">
+
+  <div class="wrap">
+    <nav>
+      <div class="logo">Griffin&nbsp;·&nbsp;Renders</div>
+      <div class="navlinks"><span>Work</span><span>About</span><span>Contact</span></div>
+    </nav>
+
+    <!-- HOME -->
+    <section id="home">
+      <div class="hero">
+        <h1>Worlds rendered<br>in <span class="tag-accent">light</span> &amp; math.</h1>
+        <p>Blender studies of landscapes and abstract ideas. A rotating index of series, each a small experiment in mood, form, and color.</p>
+      </div>
+
+      <div class="filters" id="filters">
+        <button class="chip" data-tag="all" aria-pressed="true">All</button>
+        <button class="chip" data-tag="Landscapes" aria-pressed="false">Landscapes</button>
+        <button class="chip" data-tag="Abstract" aria-pressed="false">Abstract</button>
+        <button class="chip" data-tag="Stills" aria-pressed="false">Stills</button>
+      </div>
+
+      <div class="grid" id="seriesGrid"></div>
+    </section>
+
+    <!-- SERIES DETAIL -->
+    <section id="series" class="series-view hidden">
+      <span class="back" id="back">&larr; All series</span>
+      <div class="hero" style="padding:2vh 0 4vh;">
+        <h1 id="seriesTitle" style="font-size:clamp(2rem,5vw,3.6rem);"></h1>
+        <p id="seriesTags"></p>
+      </div>
+      <div class="grid" id="renderGrid"></div>
+    </section>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lb" id="lb">
+    <span class="x" id="lbx">&times;</span>
+    <div class="frame"><div class="art" id="lbArt" style="width:100%;height:100%"></div></div>
+    <div class="cap" id="lbCap"></div>
+  </div>
+
+  <!-- DIRECTION SWITCHER -->
+  <div class="switch">
+    <span class="note">Direction:</span>
+    <button data-dir="earth" class="active">Earthen</button>
+    <button data-dir="neon">Neon Void</button>
+    <button data-dir="brutal">Brutalist</button>
+    <button data-dir="dream">Gradient Dream</button>
+  </div>
+
+<script>
+  // ---- placeholder procedural art (NOT real renders) ----
+  function art(seed, kind){
+    // muted earthy palette: browns -> olive -> greens (placeholder, not real renders)
+    const hues = [30, 42, 58, 74, 92, 112, 130];
+    const h1 = hues[seed % hues.length], h2 = hues[(seed+3) % hues.length];
+    if (kind === "Landscapes"){
+      return `background:
+        linear-gradient(180deg, hsl(${h1} 34% 50%) 0%, hsl(${h2} 28% 30%) 55%, hsl(${h1} 26% 13%) 100%);`;
+    }
+    if (kind === "Stills"){
+      // desaturated, near-neutral — suggests isolated object on plain ground
+      return `background:
+        radial-gradient(ellipse 60% 55% at 50% 60%, hsl(${h1} 12% 38%) 0%, hsl(${h2} 8% 22%) 55%, hsl(${h1} 6% 10%) 100%);`;
+    }
+    return `background:
+      conic-gradient(from ${seed*24}deg at 42% 42%, hsl(${h1} 34% 44%), hsl(${h2} 28% 36%), hsl(${(h1+24)} 32% 42%), hsl(${h1} 34% 44%));`;
+  }
+
+  const SERIES = [
+    { id:1, title:"Alpine Dawn", tag:"Landscapes", n:6 },
+    { id:2, title:"Fractal Studies", tag:"Abstract", n:8 },
+    { id:3, title:"Salt Flats", tag:"Landscapes", n:5 },
+    { id:4, title:"Chromatic Noise", tag:"Abstract", n:7 },
+    { id:5, title:"Northern Silence", tag:"Landscapes", n:6 },
+    { id:6, title:"Soft Machines", tag:"Abstract", n:6 },
+    { id:7, title:"Object Studies", tag:"Stills", n:9 },
+    { id:8, title:"Material Tests", tag:"Stills", n:5 },
+  ];
+
+  const $ = s => document.querySelector(s);
+  let filter = "all";
+
+  function renderSeries(){
+    const g = $("#seriesGrid"); g.innerHTML = "";
+    SERIES.filter(s => filter==="all" || s.tag===filter).forEach(s => {
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `<div class="art" style="${art(s.id, s.tag)}"></div>
+        <div class="meta"><span class="title">${s.title}</span>
+        <span class="tags">${s.tag} · ${s.n} renders</span></div>`;
+      el.onclick = () => openSeries(s);
+      g.appendChild(el);
+    });
+  }
+
+  function openSeries(s){
+    $("#home").classList.add("hidden");
+    $("#series").classList.remove("hidden");
+    $("#seriesTitle").textContent = s.title;
+    $("#seriesTags").textContent = s.tag;
+    const g = $("#renderGrid"); g.innerHTML = "";
+    for (let i=0;i<s.n;i++){
+      const el = document.createElement("div");
+      el.className = "card";
+      const seed = s.id*10+i;
+      el.innerHTML = `<div class="art" style="${art(seed, s.tag)}"></div>
+        <div class="meta"><span class="title">${s.title} №${i+1}</span></div>`;
+      el.onclick = () => openLB(seed, s.tag, `${s.title} №${i+1}`);
+      g.appendChild(el);
+    }
+    window.scrollTo(0,0);
+  }
+
+  function openLB(seed, kind, cap){
+    $("#lbArt").setAttribute("style", art(seed, kind)+"width:100%;height:100%;");
+    $("#lbCap").textContent = cap;
+    $("#lb").classList.add("open");
+  }
+
+  $("#back").onclick = () => { $("#series").classList.add("hidden"); $("#home").classList.remove("hidden"); };
+  $("#lbx").onclick = () => $("#lb").classList.remove("open");
+  $("#lb").onclick = e => { if(e.target.id==="lb") $("#lb").classList.remove("open"); };
+  document.addEventListener("keydown", e => { if(e.key==="Escape") $("#lb").classList.remove("open"); });
+
+  $("#filters").onclick = e => {
+    if(!e.target.classList.contains("chip")) return;
+    filter = e.target.dataset.tag;
+    [...document.querySelectorAll(".chip")].forEach(c => c.setAttribute("aria-pressed", c===e.target));
+    renderSeries();
+  };
+
+  // direction switcher + URL param
+  function setDir(d){
+    document.body.dataset.dir = d;
+    [...document.querySelectorAll(".switch button")].forEach(b => b.classList.toggle("active", b.dataset.dir===d));
+    const u = new URL(location); u.searchParams.set("dir", d); history.replaceState({}, "", u);
+  }
+  document.querySelectorAll(".switch button").forEach(b => b.onclick = () => setDir(b.dataset.dir));
+  const start = new URL(location).searchParams.get("dir");
+  if (start) setDir(start);
+
+  renderSeries();
+</script>
+</body>
+</html>
