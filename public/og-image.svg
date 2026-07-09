@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <!-- Atmospheric radial gradients matching the site's body background -->
+    <radialGradient id="g1" cx="12%" cy="-8%" r="65%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#23271a"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="115%" cy="10%" r="60%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2a2317"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Base background -->
+  <rect width="1200" height="630" fill="#16150f"/>
+  <!-- Atmospheric overlays -->
+  <rect width="1200" height="630" fill="url(#g1)"/>
+  <rect width="1200" height="630" fill="url(#g2)"/>
+
+  <!-- Accent rule  top edge -->
+  <rect x="64" y="60" width="120" height="3" rx="1.5" fill="#8a9a63"/>
+
+  <!-- Ouroboros mark (favicon at large scale, top-right) -->
+  <circle
+    cx="1104" cy="100" r="52"
+    fill="none"
+    stroke="#8a9a63"
+    stroke-width="10"
+    stroke-linecap="round"
+    stroke-dasharray="260 68"
+    transform="rotate(-90 1104 100)"
+    opacity="0.55"
+  />
+
+  <!-- Main title -->
+  <text
+    x="64" y="330"
+    font-family="'Arial Black', 'Arial Bold', system-ui, sans-serif"
+    font-size="120"
+    font-weight="900"
+    letter-spacing="-2"
+    fill="#e9e5d6"
+    text-anchor="start"
+  >OUROBORUSSS</text>
+
+  <!-- Subtitle -->
+  <text
+    x="66" y="400"
+    font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+    font-size="28"
+    fill="#8f8b73"
+    letter-spacing="3"
+    text-anchor="start"
+  >BLENDER RENDERS  LANDSCAPES · ABSTRACT · STILLS</text>
+
+  <!-- Bottom accent rule -->
+  <rect x="64" y="460" width="1072" height="1" fill="#e9e5d6" opacity="0.13"/>
+
+  <!-- URL hint -->
+  <text
+    x="64" y="500"
+    font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+    font-size="22"
+    fill="#8f8b73"
+    opacity="0.7"
+    text-anchor="start"
+  >ouroborusss.github.io/portfolio</text>
+</svg>

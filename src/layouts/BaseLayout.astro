@@ -2,9 +2,16 @@
 interface Props {
   title?: string;
   description?: string;
+  ogImage?: string;
 }
-const { title = 'Ouroborusss', description = 'Blender renders — landscapes, abstract ideas, and stills.' } = Astro.props;
+const {
+  title = 'Ouroborusss',
+  description = 'Blender renders — landscapes, abstract ideas, and stills.',
+  ogImage,
+} = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, ''); // strip trailing slash — always use `${base}/path`
+const pageTitle = title === 'Ouroborusss' ? title : `${title} — Ouroborusss`;
+const ogImageUrl = new URL(`${base}/${ogImage ?? 'og-image.svg'}`, Astro.site ?? Astro.url).href;
 ---
 <!doctype html>
 <html lang="en">
@@ -13,9 +20,21 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, ''); // strip trailing slas
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="generator" content={Astro.generator} />
   <meta name="description" content={description} />
-  <title>{title === 'Ouroborusss' ? title : `${title} — Ouroborusss`}</title>
+  <title>{pageTitle}</title>
   <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
-  <link rel="icon" href={`${base}/favicon.ico`} />
+
+  <!-- OpenGraph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content={Astro.url.href} />
+  <meta property="og:title"       content={pageTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image"       content={ogImageUrl} />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content={pageTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image"       content={ogImageUrl} />
 </head>
 <body>
   <header class="site-nav">

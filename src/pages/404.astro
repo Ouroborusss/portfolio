@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<BaseLayout title="404" description="Page not found.">
+  <div class="not-found">
+    <p class="code">404</p>
+    <p class="message">This render doesn't exist.</p>
+    <a href={`${base}/`} class="back">← Back to Work</a>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1.5rem;
+    text-align: center;
+    padding: 4rem 24px;
+  }
+
+  .code {
+    font-family: var(--font-display);
+    font-size: clamp(8rem, 20vw, 14rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--fg);
+    opacity: 0.12;
+    user-select: none;
+  }
+
+  .message {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fg);
+    margin-top: -2rem;
+  }
+
+  .back {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    border: 1px solid var(--edge-hi);
+    border-radius: 2px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    transition: background 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+
+  .back:hover {
+    background: rgba(138, 154, 99, 0.1);
+    border-color: var(--accent);
+  }
+</style>
