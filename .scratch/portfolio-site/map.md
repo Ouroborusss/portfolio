@@ -30,6 +30,9 @@ editing markdown frontmatter (Astro content collections, no CMS).
 <!-- one line per closed ticket: gist of the answer, then the link -->
 
 - [Prototype the bold/artistic visual direction](issues/03-prototype-visual-direction.md) — Earthen direction: brutalist uppercase type, near-black warm ground, muted moss-green accent, clean aligned grid, translucent frosted nav/chips/captions, square filter chips, three render categories (Landscapes / Abstract / Stills).
+- [Scaffold the Astro project](issues/01-scaffold-astro-project.md) — Astro 7 + TS strict at repo root; `src/{pages,layouts,components,content/series,styles}`, `public/images`; static output; GitHub Pages `site` config with USERNAME placeholder; `npm run build` confirmed clean; first commit `a58bd09`.
+- [Create the GitHub Pages repo and provide username](issues/02-github-pages-repo.md) — username: Ouroborusss; project site at https://Ouroborusss.github.io/portfolio; `site`+`base` finalized in astro.config.mjs; Pages source: GitHub Actions; remote `origin` wired.
+- [Research image handling for large Blender renders](issues/04-research-image-handling.md) — two-layer approach: master PNGs in `src/assets/` (Sharp → thumbnails) + pre-exported 1600px WebPs in `public/renders/full/` (verbatim → lightbox); `<Picture formats={['avif','webp']} layout="constrained">`; global Sharp codec config; EXR → PNG → WebP pipeline; repo size watch at scale.
 
 ## Not yet specified
 

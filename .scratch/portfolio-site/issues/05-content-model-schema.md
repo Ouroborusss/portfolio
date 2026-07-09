@@ -1,7 +1,7 @@
 # Define the content model and collections schema
 
 Type: task
-Status: open
+Status: claimed
 Blocked by: 01
 
 ## Question

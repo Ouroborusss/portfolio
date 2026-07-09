@@ -1,7 +1,7 @@
 # Create the GitHub Pages repo and provide username
 
 Type: task
-Status: open
+Status: resolved
 Blocked by:
 
 ## Question
@@ -20,4 +20,10 @@ HITL checklist for the human:
 
 ## Answer
 
-<!-- record: username, repo name, chosen URL form, base path if any -->
+- **GitHub username**: Ouroborusss
+- **Repo**: `portfolio` → https://github.com/Ouroborusss/portfolio
+- **Site type**: project site
+- **Published URL**: https://Ouroborusss.github.io/portfolio
+- **Astro config**: `site: 'https://Ouroborusss.github.io'`, `base: '/portfolio'`
+- **Pages source**: GitHub Actions (enabled)
+- **Remote**: `origin` set to `https://github.com/Ouroborusss/portfolio.git`
