@@ -34,6 +34,7 @@ editing markdown frontmatter (Astro content collections, no CMS).
 - [Create the GitHub Pages repo and provide username](issues/02-github-pages-repo.md) — username: Ouroborusss; project site at https://Ouroborusss.github.io/portfolio; `site`+`base` finalized in astro.config.mjs; Pages source: GitHub Actions; remote `origin` wired.
 - [Research image handling for large Blender renders](issues/04-research-image-handling.md) — two-layer approach: master PNGs in `src/assets/` (Sharp → thumbnails) + pre-exported 1600px WebPs in `public/renders/full/` (verbatim → lightbox); `<Picture formats={['avif','webp']} layout="constrained">`; global Sharp codec config; EXR → PNG → WebP pipeline; repo size watch at scale.
 - [Define the content model and collections schema](issues/05-content-model-schema.md) — `src/content.config.ts` with Astro 7 glob loader; Series schema: title, tag (Landscapes|Abstract|Stills), order, description?, cover (path string), coverAlt, renders[]; images resolved via import.meta.glob in pages; example entry + ADDING-CONTENT.md guide; build confirmed clean `51eb862`.
+- [Build the gallery, series pages and lightbox with tag filtering](issues/06-gallery-series-lightbox.md) — Earthen design system in global.css; BaseLayout (sticky translucent nav); home grid with square filter chips (JS filtering, no page reload); series detail page with render grid; full-screen lightbox with prev/next + keyboard nav; Sharp codec config; 2 pages build clean `21e7adf`.
 
 ## Not yet specified
 
