@@ -1,0 +1,127 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Picture } from 'astro:assets';
+
+export async function getStaticPaths() {
+  const series = await getCollection('series');
+  return series.map(s => ({ params: { id: s.id }, props: { series: s } }));
+}
+
+const { series } = Astro.props;
+const { Content } = await render(series);
+
+// Load all render images via import.meta.glob for Sharp processing
+const renderImages = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/renders/**/*.png',
+  { eager: true },
+);
+
+const base = import.meta.env.BASE_URL;
+
+// Resolve each render's ImageMetadata (null = not found, will show fallback)
+const resolvedRenders = series.data.renders.map((r, i) => {
+  const path = `/src/assets/renders/${series.id}/${r.src}`;
+  return { ...r, img: renderImages[path]?.default ?? null, index: i };
+});
+---
+
+<BaseLayout title={series.data.title}>
+  <div class="wrap">
+    <a href={base} class="back-link">← All series</a>
+
+    <header class="series-header">
+      <span class="tag-chip">{series.data.tag}</span>
+      <h1>{series.data.title}</h1>
+      {series.data.description && <p class="desc">{series.data.description}</p>}
+    </header>
+
+    <div class="render-grid">
+      {resolvedRenders.map(r => (
+        <button
+          class="render-tile"
+          data-index={r.index}
+          data-full={r.fullSrc}
+          data-caption={r.caption ?? ''}
+          aria-label={r.alt}
+        >
+          {r.img
+            ? <Picture
+                src={r.img}
+                formats={['avif', 'webp']}
+                layout="fill"
+                alt={r.alt}
+                loading="lazy"
+              />
+            : <div style="width:100%;height:100%;background:var(--bg-warm);" />
+          }
+        </button>
+      ))}
+    </div>
+
+    {series.body && (
+      <div class="series-body">
+        <Content />
+      </div>
+    )}
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <button class="lightbox-close" id="lbClose" aria-label="Close">×</button>
+    <button class="lightbox-nav lightbox-prev" id="lbPrev" aria-label="Previous">‹</button>
+    <div class="lightbox-frame">
+      <img id="lbImg" src="" alt="" />
+    </div>
+    <p class="lightbox-caption" id="lbCaption"></p>
+    <button class="lightbox-nav lightbox-next" id="lbNext" aria-label="Next">›</button>
+  </div>
+</BaseLayout>
+
+<style>
+  .series-body {
+    max-width: 65ch;
+    line-height: 1.7;
+    color: var(--muted);
+    padding-bottom: 60px;
+  }
+</style>
+
+<script define:vars={{ renders: resolvedRenders.map(r => ({ fullSrc: r.fullSrc, caption: r.caption ?? '', alt: r.alt })) }}>
+  const lb      = document.getElementById('lightbox');
+  const lbImg   = document.getElementById('lbImg');
+  const lbCap   = document.getElementById('lbCaption');
+  const lbClose = document.getElementById('lbClose');
+  const lbPrev  = document.getElementById('lbPrev');
+  const lbNext  = document.getElementById('lbNext');
+  let current   = 0;
+
+  function openAt(i) {
+    current = (i + renders.length) % renders.length;
+    const r = renders[current];
+    lbImg.src = r.fullSrc;
+    lbImg.alt = r.alt;
+    lbCap.textContent = r.caption;
+    lb.classList.add('open');
+    lbClose.focus();
+  }
+
+  function close() { lb.classList.remove('open'); }
+
+  document.querySelectorAll('.render-tile').forEach(tile => {
+    tile.addEventListener('click', () => openAt(Number(tile.dataset.index)));
+  });
+
+  lbClose.addEventListener('click', close);
+  lbPrev.addEventListener('click', () => openAt(current - 1));
+  lbNext.addEventListener('click', () => openAt(current + 1));
+
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape')     close();
+    if (e.key === 'ArrowLeft')  openAt(current - 1);
+    if (e.key === 'ArrowRight') openAt(current + 1);
+  });
+</script>

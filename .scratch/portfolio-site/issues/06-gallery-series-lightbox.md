@@ -1,7 +1,7 @@
 # Build the gallery, series pages and lightbox with tag filtering
 
 Type: task
-Status: open
+Status: claimed
 Blocked by: 03, 04, 05
 
 ## Question

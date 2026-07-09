@@ -1,0 +1,49 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title = 'Ouroborusss', description = 'Blender renders — landscapes, abstract ideas, and stills.' } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="generator" content={Astro.generator} />
+  <meta name="description" content={description} />
+  <title>{title === 'Ouroborusss' ? title : `${title} — Ouroborusss`}</title>
+  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <link rel="icon" href={`${base}favicon.ico`} />
+</head>
+<body>
+  <header class="site-nav">
+    <div class="wrap">
+      <a href={base} class="nav-logo">Ouroborusss</a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href={base} aria-current={Astro.url.pathname === base || Astro.url.pathname === `${base}/` ? 'page' : undefined}>Work</a></li>
+          <li><a href={`${base}about`} aria-current={Astro.url.pathname.startsWith(`${base}about`) ? 'page' : undefined}>About</a></li>
+          <li><a href={`${base}about#contact`}>Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>© {new Date().getFullYear()} Ouroborusss</span>
+      <span>Rendered in Blender</span>
+    </div>
+  </footer>
+</body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>

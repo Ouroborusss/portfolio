@@ -1,17 +1,86 @@
 ---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Picture } from 'astro:assets';
 
+const allSeries = (await getCollection('series')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+// Pre-load all render cover images via import.meta.glob so Sharp can process them
+const coverImages = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/renders/**/*.png',
+  { eager: true },
+);
+
+const base = import.meta.env.BASE_URL;
+
+const tags = ['Landscapes', 'Abstract', 'Stills'] as const;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Worlds rendered<br />in <span class="accent">light</span> &amp; math.</h1>
+      <p>Blender studies of landscapes, abstract ideas, and stills. A series-based index of work in progress.</p>
+    </section>
+
+    <div class="filters" id="filters" role="group" aria-label="Filter by category">
+      <button class="chip" data-tag="all" aria-pressed="true">All</button>
+      {tags.map(tag => (
+        <button class="chip" data-tag={tag} aria-pressed="false">{tag}</button>
+      ))}
+    </div>
+
+    <div class="series-grid" id="seriesGrid">
+      {allSeries.map(series => {
+        const coverPath = `/src/assets/renders/${series.id}/${series.data.cover}`;
+        const coverImg = coverImages[coverPath];
+        return (
+          <a
+            href={`${base}series/${series.id}`}
+            class="series-card"
+            data-tag={series.data.tag}
+          >
+            {coverImg
+              ? <Picture
+                  src={coverImg.default}
+                  formats={['avif', 'webp']}
+                  layout="fill"
+                  alt={series.data.coverAlt}
+                  loading="lazy"
+                />
+              : <div style="width:100%;height:100%;background:var(--bg-warm);" />
+            }
+            <div class="series-card-meta">
+              <div class="series-card-title">{series.data.title}</div>
+              <div class="series-card-tag">{series.data.tag} · {series.data.renders.length} renders</div>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  const filters = document.getElementById('filters')!;
+  const grid    = document.getElementById('seriesGrid')!;
+
+  filters.addEventListener('click', e => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip');
+    if (!btn) return;
+
+    const tag = btn.dataset.tag!;
+
+    // Update pressed state
+    filters.querySelectorAll<HTMLButtonElement>('.chip').forEach(c => {
+      c.setAttribute('aria-pressed', String(c === btn));
+    });
+
+    // Show / hide cards
+    grid.querySelectorAll<HTMLElement>('[data-tag]').forEach(card => {
+      card.toggleAttribute('data-hidden', tag !== 'all' && card.dataset.tag !== tag);
+    });
+  });
+</script>
