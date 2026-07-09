@@ -13,7 +13,7 @@ const { Content } = await render(series);
 
 // Load all render images via import.meta.glob for Sharp processing
 const renderImages = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/renders/**/*.png',
+  '/src/assets/renders/**/*.{jpeg,jpg,png}',
   { eager: true },
 );
 

@@ -1,7 +1,7 @@
 # Seed initial real content
 
 Type: task
-Status: open
+Status: claimed
 Blocked by: 05, 06
 
 ## Question

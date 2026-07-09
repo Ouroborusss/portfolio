@@ -9,7 +9,7 @@ const allSeries = (await getCollection('series')).sort(
 
 // Pre-load all render cover images via import.meta.glob so Sharp can process them
 const coverImages = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/renders/**/*.png',
+  '/src/assets/renders/**/*.{jpeg,jpg,png}',
   { eager: true },
 );
 
